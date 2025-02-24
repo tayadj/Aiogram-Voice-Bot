@@ -1,4 +1,5 @@
 aiogram
 openai
 pydantic
+pydantic-settings
 python-dotenv
