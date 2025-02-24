@@ -1,8 +1,10 @@
+import aiofiles
+import aiogram
 import asyncio
-
 import openai
 import pydantic
 import pydantic_settings
+import whisper
 
 
 
@@ -21,17 +23,25 @@ settings = Settings()
 
 class Engine():
 
-	def __init__(self, api_key: str):
+	def __init__(self, openai_api_token: str):
 
-		self.client = openai.AsyncOpenAI(api_key = api_key)
+		self.client = openai.AsyncOpenAI(api_key = openai_api_token)
 
-	async def voice_to_speech(self):
+	async def voice_to_text(self, path: str) -> str:
 
-		pass
+		with open(path, 'rb') as voice_file:
 
-	async def speech_to_voice(self):
+			response = await self.client.audio.transcriptions.create(file = voice_file, model = 'whisper-1')
 
-		pass
+		return response.text
+
+	async def text_to_voice(self, text: str, path: str):
+
+		response = await self.client.audio.speech.create(input = text, voice = 'nova', model = 'tts-1')
+
+		print(response)
+
+		response.stream_to_file(path)
 
 	async def search(self, query: str) -> str:
 
@@ -47,18 +57,25 @@ class Engine():
 
 class Bot():
 
-	pass
+	def __init__(self, openai_api_token: str, telegram_token: str):
 
+		self.engine = Engine(openai_api_token)
+		
+	async def process(self):
+
+		voice_input = "query.mp3"
+		voice_output = 'response.mp3'
+
+		#query = await self.engine.voice_to_text(voice_input)
+		#answer = await self.engine.search(query)
+		#print(query, answer)
+		answer = 'The capital of France is Paris'
+		await self.engine.text_to_voice(answer, voice_output)
+		
 
 
 if __name__ == '__main__':
 
-	engine = Engine(settings.OPENAI_API_TOKEN.get_secret_value())
-
-	async def main():
-
-		query = "Test query: what is the capital of France?"
-		result = await engine.search(query)
-		print(result)
-
-	asyncio.run(main())
+	bot = Bot(settings.OPENAI_API_TOKEN.get_secret_value(), settings.TELEGRAM_TOKEN.get_secret_value())
+	asyncio.run(bot.process())
+	
