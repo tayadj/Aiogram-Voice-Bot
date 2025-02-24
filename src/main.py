@@ -1,4 +1,3 @@
-import aiofiles
 import aiogram
 import asyncio
 import openai
@@ -39,8 +38,6 @@ class Engine():
 
 		response = await self.client.audio.speech.create(input = text, voice = 'nova', model = 'tts-1')
 
-		print(response)
-
 		response.stream_to_file(path)
 
 	async def search(self, query: str) -> str:
@@ -60,17 +57,19 @@ class Bot():
 	def __init__(self, openai_api_token: str, telegram_token: str):
 
 		self.engine = Engine(openai_api_token)
-		
-	async def process(self):
+		self.bot = aiogram.Bot(token = telegram_token)
+		self.dispatcher = aiogram.Dispatcher(self.bot)
 
-		voice_input = "query.mp3"
+	@self.dispatcher.message_handler(content_types = aiogram.types.ContentTypes.VOICE)
+	async def handle_voice_message(message: aiogram.types.Message):
+
+		voice_input = await message.voice.download()
 		voice_output = 'response.mp3'
 
-		#query = await self.engine.voice_to_text(voice_input)
-		#answer = await self.engine.search(query)
-		#print(query, answer)
-		answer = 'The capital of France is Paris'
+		query = await self.engine.voice_to_text(voice_input)
+		answer = await self.engine.search(query)
 		await self.engine.text_to_voice(answer, voice_output)
+		await self.bot.send_voice(message.chat.id, aiogram.types.InputFile(voice_output))
 		
 
 
