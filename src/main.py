@@ -86,14 +86,18 @@ class Bot():
 
 		return router
 
-	def run(self):
+	async def run(self):
 
-		self.dispatcher.start_polling(bot)
+		await self.dispatcher.start_polling(self.bot)
 		
 
 
 if __name__ == '__main__':
 
-	bot = Bot(settings.OPENAI_API_TOKEN.get_secret_value(), settings.TELEGRAM_TOKEN.get_secret_value())
-	bot.run()
+	async def main():
+
+		bot = Bot(settings.OPENAI_API_TOKEN.get_secret_value(), settings.TELEGRAM_TOKEN.get_secret_value())
+		await bot.run()
+
+	asyncio.run(main())
 	
