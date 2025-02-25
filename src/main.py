@@ -3,7 +3,6 @@ import asyncio
 import openai
 import pydantic
 import pydantic_settings
-import whisper
 
 
 
@@ -64,6 +63,17 @@ class Bot():
 	def setup(self):
 
 		router = aiogram.Router()
+
+		@router.message(aiogram.F.TEXT)
+		async def handle_text_message(message: aiogram.types.Message):
+
+			try:
+
+				await message.answer("Hi!")
+
+			except Exception as exception:
+
+				print("Oops!", exception)
 
 		@router.message(aiogram.F.VOICE)
 		async def handle_voice_message(message: aiogram.types.Message):

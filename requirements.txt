@@ -1,6 +1,5 @@
 aiogram
 openai
-openai-whisper
 pydantic
 pydantic-settings
 python-dotenv
