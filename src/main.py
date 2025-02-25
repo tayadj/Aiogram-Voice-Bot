@@ -1,6 +1,7 @@
 import aiogram
 import asyncio
 import openai
+import os
 import pydantic
 import pydantic_settings
 
