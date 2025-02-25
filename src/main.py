@@ -69,11 +69,11 @@ class Bot():
 
 			try:
 
-				await message.answer("Hi!")
+				await self.bot.send_message(message.chat.id, 'Hi!')
 
 			except Exception as exception:
 
-				print("Oops!", exception)
+				print('Oops!', exception)
 
 		@router.message(aiogram.F.VOICE)
 		async def handle_voice_message(message: aiogram.types.Message):
@@ -92,7 +92,7 @@ class Bot():
 
 			except Exception as exception:
 
-				print("Oops!", exception)
+				print('Oops!', exception)
 
 		return router
 
