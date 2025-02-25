@@ -109,13 +109,12 @@ class Bot():
 		self.engine = Engine(openai_api_token)
 		self.bot = aiogram.Bot(token = telegram_token)
 		self.dispatcher = aiogram.Dispatcher()
-		self.dispatcher.include_router(self.setup())
+		self.setup()
+
 
 	def setup(self):
 
-		router = aiogram.Router()
-
-		@router.message(aiogram.F.TEXT)
+		@self.dispatcher.message(aiogram.F.text)
 		async def handle_text_message(message: aiogram.types.Message):
 
 			try:
@@ -126,31 +125,34 @@ class Bot():
 
 				print('Oops!', exception)
 
-		@router.message(aiogram.F.VOICE)
+		@self.dispatcher.message(aiogram.F.voice)
 		async def handle_voice_message(message: aiogram.types.Message):
 
 			try:
 
-				voice_input = await message.voice.download()
-				voice_output = 'response.mp3'
+				voice_input_path = 'request.mp3'
+				voice_output_path = 'response.mp3'
 
-				query = await self.engine.voice_to_text(voice_input)
+				voice_file_id = message.voice.file_id
+				voice_file = await self.bot.get_file(voice_file_id)
+				await self.bot.download_file(voice_file.file_path, voice_input_path)
+
+				query = await self.engine.voice_to_text(voice_input_path)
 				answer = await self.engine.search(query)
-				await self.engine.text_to_voice(answer, voice_output)
-				await self.bot.send_voice(message.chat.id, aiogram.types.InputFile(voice_output))
+				await self.engine.text_to_voice(answer, voice_output_path)
+				await self.bot.send_voice(message.chat.id, aiogram.types.FSInputFile(voice_output_path))
 
-				os.remove('response.mp3')
+				os.remove(voice_input_path)
+				os.remove(voice_output_path)
 
 			except Exception as exception:
 
-				print('Oops!', exception)
-
-		return router
+				print(exception)
+				await self.bot.send_message(message.chat.id, 'Oops! Something is wrong.')
 
 	async def run(self):
 
 		await self.dispatcher.start_polling(self.bot)
-		
 
 
 if __name__ == '__main__':
