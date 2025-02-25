@@ -58,7 +58,7 @@ class Bot():
 
 		self.engine = Engine(openai_api_token)
 		self.bot = aiogram.Bot(token = telegram_token)
-		self.dispatcher = aiogram.Dispatcher(self.bot)
+		self.dispatcher = aiogram.Dispatcher()
 		self.setup()
 
 	def setup(self):
@@ -78,7 +78,7 @@ class Bot():
 
 	def run(self):
 
-		aiogram.executor.start_polling(self.dispatcher)
+		self.dispatcher.start_polling(bot)
 		
 
 
