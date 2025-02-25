@@ -59,22 +59,32 @@ class Bot():
 		self.engine = Engine(openai_api_token)
 		self.bot = aiogram.Bot(token = telegram_token)
 		self.dispatcher = aiogram.Dispatcher()
-		self.setup()
+		self.dispatcher.include_router(self.setup())
 
 	def setup(self):
 
-		@self.dispatcher.message_handler(content_types = aiogram.types.ContentTypes.VOICE)
+		router = aiogram.Router()
+
+		@router.message(aiogram.F.VOICE)
 		async def handle_voice_message(message: aiogram.types.Message):
 
-			voice_input = await message.voice.download()
-			voice_output = 'response.mp3'
+			try:
 
-			query = await self.engine.voice_to_text(voice_input)
-			answer = await self.engine.search(query)
-			await self.engine.text_to_voice(answer, voice_output)
-			await self.bot.send_voice(message.chat.id, aiogram.types.InputFile(voice_output))
+				voice_input = await message.voice.download()
+				voice_output = 'response.mp3'
 
-			os.remove('response.mp3')
+				query = await self.engine.voice_to_text(voice_input)
+				answer = await self.engine.search(query)
+				await self.engine.text_to_voice(answer, voice_output)
+				await self.bot.send_voice(message.chat.id, aiogram.types.InputFile(voice_output))
+
+				os.remove('response.mp3')
+
+			except Exception as exception:
+
+				print("Oops!", exception)
+
+		return router
 
 	def run(self):
 
