@@ -76,5 +76,4 @@ class Bot():
 if __name__ == '__main__':
 
 	bot = Bot(settings.OPENAI_API_TOKEN.get_secret_value(), settings.TELEGRAM_TOKEN.get_secret_value())
-	asyncio.run(bot.process())
 	
