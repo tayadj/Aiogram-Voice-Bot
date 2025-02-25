@@ -1,0 +1,10 @@
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Environment settings
+.env
+
+# Git repository
+.git
+.gitignore
