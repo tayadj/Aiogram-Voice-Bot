@@ -6,9 +6,9 @@ import aiogram
 async def handle_voice_message(message: aiogram.types.Message, engine):
 
     try:
-        # UNIQUE FILE NAMES
-        voice_input_path = 'request.mp3'
-        voice_output_path = 'response.mp3'
+
+        voice_input_path = str(message.message_id) + '_request.mp3'
+        voice_output_path = str(message.message_id) + '_response.mp3'
 
         voice_file_id = message.voice.file_id
         voice_file = await message.bot.get_file(voice_file_id)
@@ -24,5 +24,5 @@ async def handle_voice_message(message: aiogram.types.Message, engine):
         os.remove(voice_output_path)
 
     except Exception as exception:
-        print(exception)
+
         await message.answer('Oops! Something is wrong.')
