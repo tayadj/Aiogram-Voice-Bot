@@ -5,15 +5,13 @@ import aiogram
 import asyncio
 import os
 
-# 
-# @self.dispatcher.message(aiogram.F.voice)
 
 
 class Bot():
 
 	def __init__(self, openai_api_token: str, telegram_token: str):
 
-		#self.engine = core.services.Engine(openai_api_token)
+		self.engine = core.services.Engine(openai_api_token)
 		self.bot = aiogram.Bot(token = telegram_token)
 		self.dispatcher = aiogram.Dispatcher()
 		self.setup()
@@ -25,22 +23,14 @@ class Bot():
 
 			await core.handlers.handle_text_message(message)
 
+		@self.dispatcher.message(aiogram.F.voice)
+		async def handle_voice_message(message: aiogram.types.Message):
+
+			await core.handlers.handle_voice_message(message, self.engine)
+
 	async def run(self):
 
 		await self.dispatcher.start_polling(self.bot)
-
-"""
-
-
-
-
-if __name__ == '__main__':
-
-
-
-
-"""
-
 
 if __name__ == '__main__':
 
