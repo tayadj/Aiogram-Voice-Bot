@@ -4,7 +4,7 @@ import openai
 
 class Engine():
 
-	def __init__(self, openai_api_token: str):
+	def __init__(self, openai_api_token: str, openai_api_assistant: str):
 
 		self.client = openai.AsyncOpenAI(api_key = openai_api_token)
 
@@ -12,15 +12,11 @@ class Engine():
 		self.thread = None
 
 		self.setup_event = asyncio.Event()
-		asyncio.create_task(self.assistant_setup())
+		asyncio.create_task(self.assistant_setup(openai_api_assistant))
 
-	async def assistant_setup(self):
+	async def assistant_setup(self, openai_api_assistant: str):
 
-		#do not create, create in case if doesn't exist
-		self.assistant = await self.client.beta.assistants.create(
-			model = 'gpt-3.5-turbo',
-			instructions = 'You are a search assistant.'
-		)
+		self.assistant = await self.client.beta.assistants.retrieve(openai_api_assistant)
 		self.thread = await self.client.beta.threads.create()
 
 		self.setup_event.set()

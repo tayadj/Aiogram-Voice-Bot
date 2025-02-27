@@ -9,10 +9,10 @@ import os
 
 class Bot():
 
-	def __init__(self, openai_api_token: str, telegram_token: str):
+	def __init__(self, settings):
 
-		self.engine = core.services.Engine(openai_api_token)
-		self.bot = aiogram.Bot(token = telegram_token)
+		self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
+		self.bot = aiogram.Bot(token = settings.TELEGRAM_TOKEN.get_secret_value())
 		self.dispatcher = aiogram.Dispatcher()
 		self.setup()
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
 	async def main():
 
 		settings = config.Settings()
-		bot = Bot(settings.OPENAI_API_TOKEN.get_secret_value(), settings.TELEGRAM_TOKEN.get_secret_value())
+		bot = Bot(settings)
 		await bot.run()
 
 	asyncio.run(main())
