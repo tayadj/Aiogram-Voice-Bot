@@ -8,4 +8,4 @@ async def handle_text_message(message: aiogram.types.Message):
 
 	except Exception as exception:
 
-		print('Oops!', exception)
+		await message.answer('Oops! Something is wrong.')

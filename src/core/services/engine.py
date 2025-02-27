@@ -56,24 +56,10 @@ class Engine():
             content = query
 		)
 
-		run = await self.client.beta.threads.runs.create(
+		run = await self.client.beta.threads.runs.create_and_poll(
 			thread_id = self.thread.id,
 			assistant_id = self.assistant.id
 		)
-
-		#create_and_poll
-
-		while run.status not in ['completed', 'failed']:
-
-			await asyncio.sleep(1)
-			run = await self.client.beta.threads.runs.retrieve(
-				thread_id = self.thread.id,
-				run_id = run.id
-			)
-
-		content = None
-
-
 
 		if run.status == 'completed':
 
@@ -84,6 +70,6 @@ class Engine():
 
 		else:
 
-			content = run.status
+			content = 'Oops! Status: ' + run.status
 
 		return content
