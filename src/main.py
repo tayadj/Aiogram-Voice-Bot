@@ -12,6 +12,7 @@ class Bot():
 	def __init__(self, settings):
 
 		self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
+		# self.database 
 		self.bot = aiogram.Bot(token = settings.TELEGRAM_TOKEN.get_secret_value())
 		self.dispatcher = aiogram.Dispatcher()
 		self.setup()
@@ -31,6 +32,8 @@ class Bot():
 	async def run(self):
 
 		await self.dispatcher.start_polling(self.bot)
+
+
 
 if __name__ == '__main__':
 

@@ -2,6 +2,8 @@ import aiogram
 import asyncio
 import openai
 
+
+
 class Engine():
 
 	def __init__(self, openai_api_token: str, openai_api_assistant: str):
