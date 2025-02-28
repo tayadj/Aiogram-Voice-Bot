@@ -17,3 +17,4 @@ class Settings(pydantic_settings.BaseSettings):
 	OPENAI_API_ASSISTANT: pydantic.SecretStr # VOICE_ASSISTANT
 	# OPENAI_API_VALUE_ASSISTANT
 	TELEGRAM_TOKEN: pydantic.SecretStr
+	POSTGRE_URL: pydantic.SecretStr

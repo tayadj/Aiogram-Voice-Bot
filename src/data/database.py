@@ -1,0 +1,17 @@
+from .models import ModelUser
+
+import sqlalchemy
+import sqlalchemy.ext.asyncio
+import sqlalchemy.orm
+
+
+
+class Database:
+
+	def __init__(self, settings):
+
+		self.url = settings.POSTGRE_URL.get_secret_value()
+		self.engine = sqlalchemy.ext.asyncio.create_async_engine(self.url, echo = True)
+		self.SessionLocal = sqlalchemy.orm.sessionmaker(bind = engine, class_ = sqlalchemy.ext.asyncio.AsyncSession, expire_on_commit = False)
+
+
