@@ -12,6 +12,6 @@ class Database:
 
 		self.url = settings.POSTGRE_URL.get_secret_value()
 		self.engine = sqlalchemy.ext.asyncio.create_async_engine(self.url, echo = True)
-		self.SessionLocal = sqlalchemy.orm.sessionmaker(bind = engine, class_ = sqlalchemy.ext.asyncio.AsyncSession, expire_on_commit = False)
+		self.SessionLocal = sqlalchemy.orm.sessionmaker(bind = self.engine, class_ = sqlalchemy.ext.asyncio.AsyncSession, expire_on_commit = False)
 
 
