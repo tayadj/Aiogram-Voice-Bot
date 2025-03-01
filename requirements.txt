@@ -1,4 +1,5 @@
 aiogram
+aiopg
 alembic
 asyncpg
 openai
