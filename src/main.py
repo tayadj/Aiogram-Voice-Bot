@@ -12,8 +12,7 @@ class Bot():
 
 	def __init__(self, settings):
 
-		#self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
-		self.engine = None
+		self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
 		self.database = data.Database(settings.DATABASE_URL.get_secret_value())
 
 		self.bot = aiogram.Bot(token = settings.TELEGRAM_TOKEN.get_secret_value())

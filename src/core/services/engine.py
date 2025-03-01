@@ -65,16 +65,12 @@ class Engine():
 
 		if run.status == 'completed':
 
-			print('run.status completed')
-
 			messages = await self.client.beta.threads.messages.list(
 				thread_id = self.thread.id
 			)
 			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'	
 
 		elif run.status == 'requires_action':
-
-			print('run.status requires_action')
 
 			tool_responses = []
 
@@ -103,15 +99,12 @@ class Engine():
 			messages = await self.client.beta.threads.messages.list(
 				thread_id = self.thread.id
 			)
-			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'	
+			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'
 			
 		else:
-
-			print('run.status', run.status)
 			
 			content = 'Oops! Status: ' + run.status
 
-		print("debug: ",content, values)
 		return content, values
 
 	async def validate_values(self, values):
@@ -120,7 +113,6 @@ class Engine():
 		
 			validated: bool
 
-		print("debug: ", values)
 		completion = await self.client.beta.chat.completions.parse(
 			model = 'gpt-4o-mini-2024-07-18',
 			messages = [

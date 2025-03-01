@@ -16,7 +16,6 @@ async def handle_voice_message(message: aiogram.types.Message, engine, database)
 
 		query = await engine.voice_to_text(voice_input_path)
 		answer, values = await engine.search(query)
-		print('hvm:',answer, values)
 		await engine.text_to_voice(answer, voice_output_path)
 
 		await message.bot.send_voice(message.chat.id, aiogram.types.FSInputFile(voice_output_path))
@@ -25,8 +24,6 @@ async def handle_voice_message(message: aiogram.types.Message, engine, database)
 		os.remove(voice_output_path)
 
 		if values:
-
-			print('hvm:',answer, values)
 			
 			async with database.session_local() as session:
 
