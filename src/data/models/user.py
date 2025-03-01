@@ -18,12 +18,11 @@ class ModelUser:
         __tablename__ = 'users'
 
         id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(primary_key = True)
-        user: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(unique = True)
         value: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column()
 
-    async def create_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, user: int, value: str):
+    async def create_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, value: str):
 
-        user = self.User(id = id, user = user, value = value)
+        user = self.User(id = id, value = value)
         database.add(user)
 
         await database.commit()
@@ -31,15 +30,15 @@ class ModelUser:
 
         return user
 
-    async def read_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, user: int):
+    async def read_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int):
 
-        user = await database.get(self.User, user)
+        user = await database.get(self.User, id)
 
         return user
 
-    async def update_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, user: int, value: str):
+    async def update_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, value: str):
 
-        user = await database.get(self.User, user)
+        user = await database.get(self.User, id)
         user.value = value
 
         await database.commit()
@@ -47,9 +46,9 @@ class ModelUser:
 
         return user
 
-    async def delete_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, user: int):
+    async def delete_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int):
 
-        user = await database.get(self.User, user)
+        user = await database.get(self.User, id)
 
         await database.delete(user)
         await database.commit()

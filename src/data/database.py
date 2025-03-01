@@ -15,5 +15,3 @@ class Database:
 		self.session_local = sqlalchemy.orm.sessionmaker(bind = self.engine, class_ = sqlalchemy.ext.asyncio.AsyncSession, expire_on_commit = False)
 
 		self.model_user = ModelUser()
-
-	
