@@ -8,15 +8,14 @@ import sqlalchemy.orm
 
 class Database:
 
-	def __init__(self, settings):
+	def __init__(self, url):
 
-		self.url = settings.POSTGRE_URL.get_secret_value()
+
+		#AsyncAdaptedPool!!!
+		self.url = url
 		self.engine = sqlalchemy.ext.asyncio.create_async_engine(
 			self.url, 
-			echo = True, 
-			poolclass = AsyncAdaptedPool, 
-			pool_size = 10, 
-			max_overflow = 0
+			echo = True
 		)
 		self.session_local = sqlalchemy.orm.sessionmaker(
 			bind = self.engine, 

@@ -1,2 +1,3 @@
+from .handle_profile_command import handle_profile_command
 from .handle_text_message import handle_text_message
 from .handle_voice_message import handle_voice_message

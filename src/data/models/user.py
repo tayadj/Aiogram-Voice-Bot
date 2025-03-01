@@ -17,7 +17,7 @@ class ModelUser:
 
         __tablename__ = 'users'
 
-        id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(primary_key = True)
+        id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(sqlalchemy.BigInteger, primary_key = True)
         value: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column()
 
     async def create_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, value: str):
