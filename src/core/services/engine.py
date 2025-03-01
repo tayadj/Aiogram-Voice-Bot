@@ -2,6 +2,7 @@ import aiogram
 import asyncio
 import json
 import openai
+import pydantic
 
 
 
@@ -15,9 +16,9 @@ class Engine():
 		self.thread = None
 
 		self.setup_event = asyncio.Event()
-		asyncio.create_task(self.assistant_setup(openai_api_assistant))
+		asyncio.create_task(self.engine_setup(openai_api_assistant))
 
-	async def assistant_setup(self, openai_api_assistant: str):
+	async def engine_setup(self, openai_api_assistant: str):
 
 		self.assistant = await self.client.beta.assistants.retrieve(openai_api_assistant)
 		self.thread = await self.client.beta.threads.create()
@@ -77,13 +78,16 @@ class Engine():
 
 				if call.function.name == 'analyze_value':
 
-					print("call.function.arguments: ", call.function.arguments)
 					arguments = json.loads(call.function.arguments)
 					result = await self.validate_values(arguments['values'])
+
+					if result.validated == True:
+
+						values = arguments['values']
 					
 					tool_responses.append({
 						'tool_call_id': call.id,
-						'output': str(result)
+						'output': str(result.validated)
 					})
 
 			await self.client.beta.threads.runs.submit_tool_outputs_and_poll(
@@ -105,7 +109,22 @@ class Engine():
 
 	async def validate_values(self, values) -> str:
 
-		return True
+		class Validation(pydantic.BaseModel):
+		
+			validated: bool
+
+		completion = await self.client.beta.chat.completions.parse(
+			model = 'gpt-4o-mini-2024-07-18',
+			messages = [
+				{'role': 'system', 'content': 'Determine whether the detection of user-defined moral values (in the format of comma-separated words) correct and free of nonsense.'},
+				{'role': 'user', 'content': values}
+			],
+			response_format = Validation
+		)
+
+		response = completion.choices[0].message.parsed
+
+		return response
 
 
 
