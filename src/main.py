@@ -12,13 +12,26 @@ class Bot():
 
 	def __init__(self, settings):
 
-		self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
+		#self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
+		self.engine = None
 		self.database = data.Database(settings.DATABASE_URL.get_secret_value())
 
 		self.bot = aiogram.Bot(token = settings.TELEGRAM_TOKEN.get_secret_value())
 		self.dispatcher = aiogram.Dispatcher()
 
+		self.commands_setup()
 		self.handlers_setup()
+
+	def commands_setup(self):
+
+		async def run():
+
+			commands = [
+				aiogram.types.BotCommand(command = '/profile', description = 'Show profile')
+			]
+			await self.bot.set_my_commands(commands = commands)
+
+		asyncio.create_task(run())
 
 	def handlers_setup(self):
 
