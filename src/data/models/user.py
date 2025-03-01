@@ -1,8 +1,11 @@
 import sqlalchemy
 import sqlalchemy.ext.asyncio
+import sqlalchemy.future
 import sqlalchemy.orm
 
 
+
+# add handling if user == None via if/else
 
 class ModelUser:
 
@@ -22,5 +25,33 @@ class ModelUser:
 
         user = self.User(id = id, user = user, value = value)
         database.add(user)
+
         await database.commit()
         await database.refresh(user)
+
+        return user
+
+    async def read_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, user: int):
+
+        user = await database.get(self.User, user)
+
+        return user
+
+    async def update_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, user: int, value: str):
+
+        user = await database.get(self.User, user)
+        user.value = value
+
+        await database.commit()
+        await database.refresh(user)
+
+        return user
+
+    async def delete_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, user: int):
+
+        user = await database.get(self.User, user)
+
+        await database.delete(user)
+        await database.commit()
+
+        return user
