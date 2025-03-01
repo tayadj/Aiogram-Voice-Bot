@@ -22,6 +22,11 @@ class Bot():
 
 	def handlers_setup(self):
 
+		@self.dispatcher.message(aiogram.filters.Command('start'))
+		async def handle_profile_command(message: aiogram.types.Message):
+
+			await core.handlers.handle_start_command(message, self.engine, self.database)
+
 		@self.dispatcher.message(aiogram.filters.Command('profile'))
 		async def handle_profile_command(message: aiogram.types.Message):
 
@@ -30,7 +35,7 @@ class Bot():
 		@self.dispatcher.message(aiogram.F.text)
 		async def handle_text_message(message: aiogram.types.Message):
 
-			await core.handlers.handle_text_message(message)
+			await core.handlers.handle_text_message(message, self.database)
 
 		@self.dispatcher.message(aiogram.F.voice)
 		async def handle_voice_message(message: aiogram.types.Message):

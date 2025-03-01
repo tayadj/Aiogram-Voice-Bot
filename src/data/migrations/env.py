@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 settings = Settings()
 
 config = context.config
-config.set_main_option('sqlalchemy.url', settings.POSTGRE_URL.get_secret_value())
+config.set_main_option('sqlalchemy.url', settings.DATABASE_URL.get_secret_value())
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

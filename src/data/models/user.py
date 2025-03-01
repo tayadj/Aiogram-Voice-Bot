@@ -5,8 +5,6 @@ import sqlalchemy.orm
 
 
 
-# add handling if user == None via if/else
-
 class ModelUser:
 
     class Base(sqlalchemy.orm.DeclarativeBase):
@@ -18,11 +16,11 @@ class ModelUser:
         __tablename__ = 'users'
 
         id: sqlalchemy.orm.Mapped[int] = sqlalchemy.orm.mapped_column(sqlalchemy.BigInteger, primary_key = True)
-        value: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column()
+        values: sqlalchemy.orm.Mapped[str] = sqlalchemy.orm.mapped_column()
 
-    async def create_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, value: str):
+    async def create_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, values: str):
 
-        user = self.User(id = id, value = value)
+        user = self.User(id = id, values = values)
         database.add(user)
 
         await database.commit()
@@ -36,10 +34,10 @@ class ModelUser:
 
         return user
 
-    async def update_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, value: str):
+    async def update_user(self, database: sqlalchemy.ext.asyncio.AsyncSession, id: int, values: str):
 
         user = await database.get(self.User, id)
-        user.value = value
+        user.values = values
 
         await database.commit()
         await database.refresh(user)

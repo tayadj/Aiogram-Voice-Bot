@@ -10,14 +10,7 @@ async def handle_profile_command(message: aiogram.types.Message, engine, databas
 	
 			user = await database.model_user.read_user(session, message.from_user.id)
 		
-			if user:
-				
-				await message.answer(f'Profile\n\nValues: {user.value}')					
-
-			else:
-
-				await message.answer('I don\'t know you yet.')
-				await database.model_user.create_user(session, message.from_user.id, 'unknown')
+			await message.answer(f'Profile\n\nValues: {user.values}')
 
 	except Exception as exception:
 

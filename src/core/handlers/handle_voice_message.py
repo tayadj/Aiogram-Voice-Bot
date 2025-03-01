@@ -15,7 +15,8 @@ async def handle_voice_message(message: aiogram.types.Message, engine, database)
 		await message.bot.download_file(voice_file.file_path, voice_input_path)
 
 		query = await engine.voice_to_text(voice_input_path)
-		answer, value = await engine.search(query)
+		answer, values = await engine.search(query)
+		print('hvm:',answer, values)
 		await engine.text_to_voice(answer, voice_output_path)
 
 		await message.bot.send_voice(message.chat.id, aiogram.types.FSInputFile(voice_output_path))
@@ -23,19 +24,13 @@ async def handle_voice_message(message: aiogram.types.Message, engine, database)
 		os.remove(voice_input_path)
 		os.remove(voice_output_path)
 
-		if value:
+		if values:
 
-			await message.answer(f'It seems like your moral value: {value}')
+			print('hvm:',answer, values)
 			
 			async with database.session_local() as session:
 
-				user = await database.model_user.update_user(session, message.from_user.id, value)
-				print(user)
-
-		else:
-
-			await message.answer(f'I couldn\'t recognize your values for now')
-
+				user = await database.model_user.update_user(session, message.from_user.id, values)
 
 	except Exception as exception:
 
