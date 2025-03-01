@@ -1,5 +1,8 @@
 aiogram
+alembic
+asyncpg
 openai
 pydantic
 pydantic-settings
 python-dotenv
+sqlalchemy

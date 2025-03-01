@@ -16,3 +16,4 @@ class Settings(pydantic_settings.BaseSettings):
 	OPENAI_API_TOKEN: pydantic.SecretStr
 	OPENAI_API_ASSISTANT: pydantic.SecretStr
 	TELEGRAM_TOKEN: pydantic.SecretStr
+	DATABASE_URL: pydantic.SecretStr
