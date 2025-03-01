@@ -8,8 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN alembic -c ./src/data/alembic.ini upgrade head
-
 WORKDIR /app
 
 CMD ["python", "src/main.py"]
