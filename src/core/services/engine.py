@@ -1,5 +1,6 @@
 import aiogram
 import asyncio
+import json
 import openai
 
 
@@ -48,7 +49,7 @@ class Engine():
 
 		await self.setup_event.wait()
 
-		value = None
+		values = None
 
 		message = await self.client.beta.threads.messages.create(
 			thread_id = self.thread.id,
@@ -70,38 +71,41 @@ class Engine():
 
 		elif run.status == 'requires_action':
 
+			tool_responses = []
+
 			for call in run.required_action.submit_tool_outputs.tool_calls:
 
 				if call.function.name == 'analyze_value':
 
 					print("call.function.arguments: ", call.function.arguments)
-
-					#result =
+					arguments = json.loads(call.function.arguments)
+					result = await self.validate_values(arguments['values'])
 					
-					response = {
+					tool_responses.append({
 						'tool_call_id': call.id,
-						'output': 'analyze value functionality is in progress'
-					}
+						'output': str(result)
+					})
 
-					await self.client.beta.runs.submit_tool_outputs_and_poll(
-						thread_id = self.thread.id,
-						run_id = run.id,
-						tool_outputs = response
-					)
+			await self.client.beta.threads.runs.submit_tool_outputs_and_poll(
+				thread_id = self.thread.id,
+				run_id = run.id,
+				tool_outputs = tool_responses
+			)
 
-					content = 'Analyze_value called'
-
-			content = 'Oops! Status: unknown_action'
+			messages = await self.client.beta.threads.messages.list(
+				thread_id = self.thread.id
+			)
+			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'	
 			
 		else:
 			
 			content = 'Oops! Status: ' + run.status
 
-		return content, value
+		return content, values
 
-	async def analyze_value(self, query) -> str:
+	async def validate_values(self, values) -> str:
 
-		return None
+		return True
 
 
 
