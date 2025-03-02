@@ -24,8 +24,20 @@ class Analytics:
 
 		return self._instance
 
-	def send_event(self, user_id: str, event_type: str, event_properties: dict):
+	def send_event(self, event_type: str, user_id: str, miscellaneous: dict):
 
-		pass
+		event = amplitude.event.BaseEvent(
+			event_type = event_type,
+			event_properties = miscellaneous.get('event_properties', None)
+			user_id = user_id,
+			user_propreties = miscellaneous.get('user_propreties', None)
+			time = miscellaneous.get('time', None)
+			region = miscellaneous.get('region', None)
+			language = miscellaneous.get('language', None)
+		)
 
-		
+		self.executor.submit(self.track_event, event)
+
+	def track_event(self, event: amplitude.event.BaseEvent):
+
+		self.client.track(event)
