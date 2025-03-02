@@ -15,7 +15,6 @@ class Bot():
 		#self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
 		self.engine = None
 		self.analytics = core.services.Analytics(settings.AMPLITUDE_API_TOKEN.get_secret_value())
-		self.analytics_2 = core.services.Analytics("1234678")
 		self.database = data.Database(settings.DATABASE_URL.get_secret_value())
 
 		self.bot = aiogram.Bot(token = settings.TELEGRAM_TOKEN.get_secret_value())
@@ -38,24 +37,39 @@ class Bot():
 	def handlers_setup(self):
 
 		@self.dispatcher.message(aiogram.filters.Command('start'))
-		async def handle_profile_command(message: aiogram.types.Message):
+		async def handle_start_command(message: aiogram.types.Message):
 
-			await core.handlers.handle_start_command(message, self.engine, self.database)
+			await core.handlers.handle_start_command(message, self.database)
+
+			self.analytics.send_event('start_command', message.from_user.id)
 
 		@self.dispatcher.message(aiogram.filters.Command('profile'))
 		async def handle_profile_command(message: aiogram.types.Message):
 
-			await core.handlers.handle_profile_command(message, self.engine, self.database)
+			await core.handlers.handle_profile_command(message, self.database)
+
+			self.analytics.send_event('profile_command', message.from_user.id)
 
 		@self.dispatcher.message(aiogram.F.text)
 		async def handle_text_message(message: aiogram.types.Message):
 
-			await core.handlers.handle_text_message(message, self.database)
+			await core.handlers.handle_text_message(message)
+
+			self.analytics.send_event('text_message', message.from_user.id)
 
 		@self.dispatcher.message(aiogram.F.voice)
 		async def handle_voice_message(message: aiogram.types.Message):
 
 			await core.handlers.handle_voice_message(message, self.engine, self.database)
+
+			self.analytics.send_event('voice_message', message.from_user.id)
+
+		@self.dispatcher.message(aiogram.F.image)
+		async def handle_image_message(message: aiogram.types.Message):
+
+			await core.handlers.handle_image_message(message, self.engine)
+
+			self.analytics.send_event('image_message', message.from_user.id)
 
 	async def run(self):
 

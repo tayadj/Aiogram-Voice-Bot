@@ -2,7 +2,7 @@ import aiogram
 
 
 
-async def handle_start_command(message: aiogram.types.Message, engine, database):
+async def handle_start_command(message: aiogram.types.Message, database):
 
 	try:
 

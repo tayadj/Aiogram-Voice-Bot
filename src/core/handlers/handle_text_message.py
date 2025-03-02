@@ -2,7 +2,7 @@ import aiogram
 
 
 
-async def handle_text_message(message: aiogram.types.Message, database):
+async def handle_text_message(message: aiogram.types.Message):
 
 	try:
 
