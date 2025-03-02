@@ -157,8 +157,5 @@ class Engine():
 				}
 			]
 		)
-		response = response.choices[0]
 
-		return response
-
-		
+		return response.choices[0].message.content

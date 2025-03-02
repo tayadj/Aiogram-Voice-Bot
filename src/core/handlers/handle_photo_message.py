@@ -1,4 +1,5 @@
 import aiogram
+import os
 
 
 
@@ -13,7 +14,7 @@ async def handle_photo_message(message: aiogram.types.Message, engine):
 		await message.bot.download_file(photo_file.file_path, photo_input_path)
 
 		answer = await engine.analyze_mood(photo_input_path)
-		await message.bot.answer(answer)
+		await message.answer(answer)
 
 		os.remove(photo_input_path)
 
