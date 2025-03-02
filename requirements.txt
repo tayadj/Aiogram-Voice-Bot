@@ -1,6 +1,7 @@
 aiogram
 aiopg
 alembic
+amplitude-analytics
 asyncpg
 openai
 psycopg2-binary
