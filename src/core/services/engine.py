@@ -1,5 +1,6 @@
 import aiogram
 import asyncio
+import base64
 import json
 import openai
 import pydantic
@@ -126,6 +127,38 @@ class Engine():
 
 		return response
 
+	async def analyze_mood(self, path: str):
 
+		def encode_image(path: str):
+
+			with open(path, 'rb') as file:
+
+				return base64.b64encode(file.read()).decode('utf-8')
+
+		base64_image = encode_image(path)
+
+		response = await self.client.chat.completions.create(
+			model = 'gpt-4o-mini',
+			messages = [
+				{
+					'role': 'user', 
+					'content': [
+						{
+							'type': 'text', 
+							'text': 'Determine the mood from the photo'
+						},
+						{
+							'type': 'image_url',
+							'image_url': {
+								'url': f'data:image/jpeg;base64,{base64_image}'
+							}                
+						}
+					]
+				}
+			]
+		)
+		response = response.choices[0]
+
+		return response
 
 		

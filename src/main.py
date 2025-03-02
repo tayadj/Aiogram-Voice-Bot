@@ -12,8 +12,8 @@ class Bot():
 
 	def __init__(self, settings):
 
-		#self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
-		self.engine = None
+		self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value())
+		#self.engine = None
 		self.analytics = core.services.Analytics(settings.AMPLITUDE_API_TOKEN.get_secret_value())
 		self.database = data.Database(settings.DATABASE_URL.get_secret_value())
 
@@ -64,12 +64,12 @@ class Bot():
 
 			self.analytics.send_event('voice_message', message.from_user.id)
 
-		@self.dispatcher.message(aiogram.F.image)
-		async def handle_image_message(message: aiogram.types.Message):
+		@self.dispatcher.message(aiogram.F.photo)
+		async def handle_photo_message(message: aiogram.types.Message):
 
-			await core.handlers.handle_image_message(message, self.engine)
+			await core.handlers.handle_photo_message(message, self.engine)
 
-			self.analytics.send_event('image_message', message.from_user.id)
+			self.analytics.send_event('photo_message', message.from_user.id)
 
 	async def run(self):
 
