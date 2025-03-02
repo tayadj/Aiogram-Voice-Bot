@@ -7,8 +7,8 @@ async def handle_voice_message(message: aiogram.types.Message, engine, database)
 
 	try:
 
-		voice_input_path = str(message.message_id) + '_request.mp3'
-		voice_output_path = str(message.message_id) + '_response.mp3'
+		voice_input_path = str(message.message_id) + '_voice_request.mp3'
+		voice_output_path = str(message.message_id) + '_voice_response.mp3'
 
 		voice_file_id = message.voice.file_id
 		voice_file = await message.bot.get_file(voice_file_id)

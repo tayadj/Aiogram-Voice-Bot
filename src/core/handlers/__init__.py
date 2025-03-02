@@ -1,3 +1,4 @@
+from .handle_photo_message import handle_photo_message
 from .handle_profile_command import handle_profile_command
 from .handle_start_command import handle_start_command
 from .handle_text_message import handle_text_message
