@@ -1,5 +1,4 @@
 aiogram
-aiopg
 alembic
 amplitude-analytics
 asyncpg
@@ -8,4 +7,5 @@ psycopg2-binary
 pydantic
 pydantic-settings
 python-dotenv
+redis
 sqlalchemy
