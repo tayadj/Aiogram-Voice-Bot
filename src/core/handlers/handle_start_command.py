@@ -19,6 +19,8 @@ async def handle_start_command(message: aiogram.types.Message, database):
 				await message.answer('I don\'t know you yet.')
 				await database.model_user.create_user(session, message.from_user.id, 'unknown')
 
+		return {'handler': 'handle_start_command'}
+
 	except Exception as exception:
 
 		print(exception)

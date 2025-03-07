@@ -67,12 +67,12 @@ class Engine():
 
 				for index, annotation in enumerate(annotations):
 
-					message_content.value = message_content.value.replace(annotation.text, f'[{index}]')
+					message_content.value = message_content.value.replace(annotation.text, f'[{index + 1}]')
 
 					if file_citation := getattr(annotation, 'file_citation', None):
 
 						cited_file = await self.client.files.retrieve(file_citation.file_id)
-						citations.append(f'[{index}] {cited_file.filename}')
+						citations.append(f'[{index + 1}] {cited_file.filename}')
 
 				content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'
 				content += '\n\n' + '\n'.join(citations)
@@ -126,7 +126,7 @@ class Engine():
 		)
 		content = await postprocess(messages, run.status)
 
-		return content, values
+		return content, values, {'thread_id': self.thread.id, 'run_id': run.id}
 
 	async def validate_values(self, values):
 

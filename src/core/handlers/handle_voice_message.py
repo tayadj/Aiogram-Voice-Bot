@@ -15,7 +15,7 @@ async def handle_voice_message(message: aiogram.types.Message, engine, database)
 		await message.bot.download_file(voice_file.file_path, voice_input_path)
 
 		query = await engine.voice_to_text(voice_input_path)
-		answer, values = await engine.search(query)
+		answer, values, reflexion = await engine.search(query)
 		await engine.text_to_voice(answer, voice_output_path)
 
 		await message.bot.send_voice(message.chat.id, aiogram.types.FSInputFile(voice_output_path))
@@ -28,6 +28,8 @@ async def handle_voice_message(message: aiogram.types.Message, engine, database)
 			async with database.session_local() as session:
 
 				user = await database.model_user.update_user(session, message.from_user.id, values)
+
+		return {'handler': 'handle_voice_message', 'thread_id': reflexion.get('thread_id'), 'run_id': reflexion.get('run_id')}
 
 	except Exception as exception:
 

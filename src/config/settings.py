@@ -19,3 +19,4 @@ class Settings(pydantic_settings.BaseSettings):
 	TELEGRAM_TOKEN: pydantic.SecretStr
 	AMPLITUDE_API_TOKEN: pydantic.SecretStr
 	DATABASE_URL: pydantic.SecretStr
+	REDIS_URL: pydantic.SecretStr
