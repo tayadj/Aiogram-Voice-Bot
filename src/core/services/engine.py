@@ -51,6 +51,20 @@ class Engine():
 
 	async def search(self, query: str) -> str:
 
+		def postprocess(messages, status):
+
+			content = ''
+
+			if status not in ['completed', 'requires_action']:
+			
+				content = f'Oops! Status: {status}'
+
+			else:
+
+				content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'
+
+			return content
+
 		await self.setup_event.wait()
 
 		values = None
@@ -66,14 +80,7 @@ class Engine():
 			assistant_id = self.assistant.id
 		)
 
-		if run.status == 'completed':
-
-			messages = await self.client.beta.threads.messages.list(
-				thread_id = self.thread.id
-			)
-			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'	
-
-		elif run.status == 'requires_action':
+		if run.status == 'requires_action':
 
 			tool_responses = []
 
@@ -99,14 +106,11 @@ class Engine():
 				tool_outputs = tool_responses
 			)
 
-			messages = await self.client.beta.threads.messages.list(
-				thread_id = self.thread.id
-			)
-			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'
-			
-		else:
-			
-			content = 'Oops! Status: ' + run.status
+		messages = await self.client.beta.threads.messages.list(
+			thread_id = self.thread.id
+		)
+
+		content = postprocess(messages, run.status)
 
 		return content, values
 
