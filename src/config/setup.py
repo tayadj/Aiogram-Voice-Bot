@@ -8,6 +8,16 @@ async def setup(openai_api_token: str):
 	vector_store = await client.beta.vector_stores.create(
 		name = 'Anxiety'
 	)
+
+	file = await client.files.create(
+		file = open('Anxiety.docx', 'rb'),
+		purpose = 'assistants'
+	)
+
+	vector_store_file = await self.client.beta.vector_stores.files.create(
+		vector_store_id = openai_api_vectorstore,
+		file_id = "file-Bu64hAV4S3QBUVWLRWr4Hp"
+	)
 	
 	assistant = await client.beta.assistants.create(
 		model = 'gpt-3.5-turbo',
@@ -33,8 +43,18 @@ async def setup(openai_api_token: str):
 						'required': ['speech', 'values']
 					}
 				}
+			},
+			{
+				'type': 'file_search'
 			}
-		]
+		],
+		tool_resources = {
+			'file_search': {
+				'vector_store_ids': [
+					vector_store.id
+				]
+			}
+		}
 	)
 
-	print(f'Vector store info:\n{vector_store}\n\nAssistant info:\n{assistant}')
+	print(f'Vector store info:\n{vector_store}\n\nAssistant info:\n{assistant}\n\nFile info:\n{file}\n\nVector store file info:\n{vector_store_file}')
