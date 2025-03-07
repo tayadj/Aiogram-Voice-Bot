@@ -23,12 +23,10 @@ class Engine():
 	async def engine_setup(self, openai_api_assistant: str, openai_api_vectorstore: str):
 
 		self.vector_store = await self.client.beta.vector_stores.retrieve(openai_api_vectorstore)
-		print(self.vector_store)
 		self.assistant = await self.client.beta.assistants.retrieve(openai_api_assistant)
 		self.thread = await self.client.beta.threads.create()
 
 		self.setup_event.set()
-
 
 	async def voice_to_text(self, path: str) -> str:
 
