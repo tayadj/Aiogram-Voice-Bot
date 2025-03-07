@@ -9,22 +9,26 @@ import pydantic
 
 class Engine():
 
-	def __init__(self, openai_api_token: str, openai_api_assistant: str):
+	def __init__(self, openai_api_token: str, openai_api_assistant: str, openai_api_vectorstore: str):
 
 		self.client = openai.AsyncOpenAI(api_key = openai_api_token)
 
+		self.vector_store = None
 		self.assistant = None
 		self.thread = None
 
 		self.setup_event = asyncio.Event()
-		asyncio.create_task(self.engine_setup(openai_api_assistant))
+		asyncio.create_task(self.engine_setup(openai_api_assistant, openai_api_vectorstore))
 
-	async def engine_setup(self, openai_api_assistant: str):
+	async def engine_setup(self, openai_api_assistant: str, openai_api_vectorstore: str):
 
+		self.vector_store = await self.client.beta.vector_stores.retrieve(openai_api_vectorstore)
+		print(self.vector_store)
 		self.assistant = await self.client.beta.assistants.retrieve(openai_api_assistant)
 		self.thread = await self.client.beta.threads.create()
 
 		self.setup_event.set()
+
 
 	async def voice_to_text(self, path: str) -> str:
 
