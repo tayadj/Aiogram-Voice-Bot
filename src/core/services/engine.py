@@ -51,7 +51,7 @@ class Engine():
 
 	async def search(self, query: str) -> str:
 
-		def postprocess(messages, status):
+		async def postprocess(messages, status):
 
 			content = ''
 
@@ -61,7 +61,21 @@ class Engine():
 
 			else:
 
+				message_content = messages.data[0].content[0].text
+				annotations = message_content.annotations
+				citations = []
+
+				for index, annotation in enumerate(annotations):
+
+					message_content.value = message_content.value.replace(annotation.text, f'[{index}]')
+
+					if file_citation := getattr(annotation, 'file_citation', None):
+
+						cited_file = await self.client.files.retrieve(file_citation.file_id)
+						citations.append(f'[{index}] {cited_file.filename}')
+
 				content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'
+				content += '\n\n' + '\n'.join(citations)
 
 			return content
 
@@ -107,10 +121,10 @@ class Engine():
 			)
 
 		messages = await self.client.beta.threads.messages.list(
-			thread_id = self.thread.id
+			thread_id = self.thread.id,
+			run_id = run.id
 		)
-
-		content = postprocess(messages, run.status)
+		content = await postprocess(messages, run.status)
 
 		return content, values
 
