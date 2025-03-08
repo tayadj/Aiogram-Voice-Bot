@@ -2,8 +2,8 @@ import config
 import core
 import data
 
-from aiogram.fsm.storage.redis import RedisStorage
 import aiogram
+import aiogram.fsm.storage.redis
 import asyncio
 import os
 
@@ -20,13 +20,12 @@ class Bot():
 	def __init__(self, settings):
 
 		self.engine = core.services.Engine(settings.OPENAI_API_TOKEN.get_secret_value(), settings.OPENAI_API_ASSISTANT.get_secret_value(), settings.OPENAI_API_VECTORSTORE.get_secret_value())
-		#self.engine = None
 		self.analytics = core.services.Analytics(settings.AMPLITUDE_API_TOKEN.get_secret_value())
 		self.database = data.Database(settings.DATABASE_URL.get_secret_value())
-		self.redis = RedisStorage.from_url(settings.REDIS_URL.get_secret_value())
+		self.redis = aiogram.fsm.storage.redis.RedisStorage.from_url(settings.REDIS_URL.get_secret_value())
 
 		self.bot = aiogram.Bot(token = settings.TELEGRAM_TOKEN.get_secret_value())
-		self.dispatcher = aiogram.Dispatcher()
+		self.dispatcher = aiogram.Dispatcher(storage = self.redis)
 
 		self.commands_setup()
 		self.handlers_setup()
@@ -36,7 +35,7 @@ class Bot():
 		async def run():
 
 			commands = [
-				aiogram.types.BotCommand(command = '/profile', description = 'Show profile')
+				aiogram.types.BotCommand(command = '/profile', description = 'Show your profile')
 			]
 			await self.bot.set_my_commands(commands = commands)
 
