@@ -14,7 +14,7 @@ async def setup(openai_api_token: str):
 		purpose = 'assistants'
 	)
 
-	vector_store_file = await self.client.beta.vector_stores.files.create(
+	vector_store_file = await client.beta.vector_stores.files.create(
 		vector_store_id = openai_api_vectorstore,
 		file_id = file.id
 	)
