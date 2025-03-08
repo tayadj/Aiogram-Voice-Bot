@@ -1,7 +1,7 @@
 import amplitude
 import concurrent.futures
 
-#implement singleton
+
 
 class Analytics:
 	

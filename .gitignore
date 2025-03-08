@@ -5,11 +5,14 @@ __pycache__/
 # IDE files
 .vs/
 
+# Environment settings
+.env
+
 # Audio files
 *.mp3
 
 # Image files
 *.jpg
 
-# Environment settings
-.env
+# Document files
+*.docx

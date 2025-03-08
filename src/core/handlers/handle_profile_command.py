@@ -12,6 +12,8 @@ async def handle_profile_command(message: aiogram.types.Message, database):
 		
 			await message.answer(f'Profile\n\nValues: {user.values}')
 
+		return {'handler': 'handle_profile_command'}
+
 	except Exception as exception:
 
 		print(exception)

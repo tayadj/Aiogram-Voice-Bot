@@ -9,18 +9,20 @@ import pydantic
 
 class Engine():
 
-	def __init__(self, openai_api_token: str, openai_api_assistant: str):
+	def __init__(self, openai_api_token: str, openai_api_assistant: str, openai_api_vectorstore: str):
 
 		self.client = openai.AsyncOpenAI(api_key = openai_api_token)
 
+		self.vector_store = None
 		self.assistant = None
 		self.thread = None
 
 		self.setup_event = asyncio.Event()
-		asyncio.create_task(self.engine_setup(openai_api_assistant))
+		asyncio.create_task(self.engine_setup(openai_api_assistant, openai_api_vectorstore))
 
-	async def engine_setup(self, openai_api_assistant: str):
+	async def engine_setup(self, openai_api_assistant: str, openai_api_vectorstore: str):
 
+		self.vector_store = await self.client.beta.vector_stores.retrieve(openai_api_vectorstore)
 		self.assistant = await self.client.beta.assistants.retrieve(openai_api_assistant)
 		self.thread = await self.client.beta.threads.create()
 
@@ -49,6 +51,34 @@ class Engine():
 
 	async def search(self, query: str) -> str:
 
+		async def postprocess(messages, status):
+
+			content = ''
+
+			if status not in ['completed', 'requires_action']:
+			
+				content = f'Oops! Status: {status}'
+
+			else:
+
+				message_content = messages.data[0].content[0].text
+				annotations = message_content.annotations
+				citations = []
+
+				for index, annotation in enumerate(annotations):
+
+					message_content.value = message_content.value.replace(annotation.text, f'[{index + 1}]')
+
+					if file_citation := getattr(annotation, 'file_citation', None):
+
+						cited_file = await self.client.files.retrieve(file_citation.file_id)
+						citations.append(f'[{index + 1}] {cited_file.filename}')
+
+				content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'
+				content += '\n\n' + '\n'.join(citations)
+
+			return content
+
 		await self.setup_event.wait()
 
 		values = None
@@ -64,14 +94,7 @@ class Engine():
 			assistant_id = self.assistant.id
 		)
 
-		if run.status == 'completed':
-
-			messages = await self.client.beta.threads.messages.list(
-				thread_id = self.thread.id
-			)
-			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'	
-
-		elif run.status == 'requires_action':
+		if run.status == 'requires_action':
 
 			tool_responses = []
 
@@ -97,16 +120,13 @@ class Engine():
 				tool_outputs = tool_responses
 			)
 
-			messages = await self.client.beta.threads.messages.list(
-				thread_id = self.thread.id
-			)
-			content = messages.data[0].content[0].text.value if messages else 'Oops! Status: server_error'
-			
-		else:
-			
-			content = 'Oops! Status: ' + run.status
+		messages = await self.client.beta.threads.messages.list(
+			thread_id = self.thread.id,
+			run_id = run.id
+		)
+		content = await postprocess(messages, run.status)
 
-		return content, values
+		return content, values, {'thread_id': self.thread.id, 'run_id': run.id}
 
 	async def validate_values(self, values):
 

@@ -2,9 +2,21 @@
 __pycache__/
 *.py[cod]
 
+# IDE files
+.vs/
+
 # Environment settings
 .env
 
 # Git repository
 .git
 .gitignore
+
+# Audio files
+*.mp3
+
+# Image files
+*.jpg
+
+# Document files
+*.docx

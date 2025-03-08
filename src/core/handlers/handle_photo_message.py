@@ -18,6 +18,8 @@ async def handle_photo_message(message: aiogram.types.Message, engine):
 
 		os.remove(photo_input_path)
 
+		return {'handler': 'handle_photo_message'}
+
 	except Exception as exception:
 
 		print(exception)
